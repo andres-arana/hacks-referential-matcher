@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>AXA Assistance - Referential data matching</title>
+
+<script type="text/javascript" src="javascripts/underscore.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.csv.min.js"></script>
+<script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
+<script type="text/javascript" src="javascripts/matcher.js"></script>
+
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/font-awesome.min.css" />
+<!--[if IE 7]>>
+  <link rel="stylesheet" href="css/font-awesome-ie7.min.css" />
+<![endif]-->
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="container">
+  <h1><i class="icon-random"></i> Referential data matching</h1>
+
+  <div class="step">
+    <h2>1 - CSV file</h2>
+    <p>
+    Copy and paste your CSV file contents here, and then press the Analyze
+    button
+    </p>
+    <textarea id="csv-file" rows="15" class="input-block-level"
+      cols="30"></textarea>
+    <button id="csv-file-analyze" class="btn btn-info btn-large">Analyze</a>
+  </div>
+
+  <div class="step">
+    <h2>2 - Configure</h2>
+    <div id="csv-config-message" class="alert alert-info">
+      You need to analyze a CSV file in step 1 first
+    </div>
+    <div id="csv-config" style="display: none;">
+      <p>
+      CSV file has <span id="csv-config-records" class="label"></span> records,
+      each having <span id="csv-config-fields" class="label"></span> fields.
+      </p>
+      <div class="row">
+        <div class="span4">
+          <h5>Environment field</h5>
+          <select id="environment"></select>
+        </div>
+        <div class="span4">
+          <h5>Code fields</h5>
+          <div id="codes"></div>
+        </div>
+        <div class="span4">
+          <h5>Description fields</h5>
+          <div id="descriptions"></div>
+        </div>
+      </div>
+      <button id="match" class="btn btn-info btn-large">Match</button>
+    </div>
+  </div>
+
+  <div class="step">
+    <h2>3 - See the results</h2>
+    <div id="csv-match-message" class="alert alert-info">
+      You need to configure the CSV file in step 2 first
+    </div>
+    <div id="results" style="display :node;">
+      <ul id="result-log"></ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
