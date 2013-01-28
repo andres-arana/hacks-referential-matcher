@@ -12,39 +12,19 @@ requirejs.config({
     'jquery': {
       exports: '$',
     },
-    'jquery.csv': ['jquery'],
+    'jquery.csv': {
+      deps: ['jquery'],
+      exports: '$.csv',
+    },
   },
 });
 
-requirejs(['jquery', 'underscore', 'jquery.csv'], function($, _) {
-function CSV(text) {
-  this.data = $.csv.toArrays(text);
+requirejs(['jquery', 'underscore', 'app/data'], function($, _, Data) {
 
-  this.hasData = function() {
-    return this.data.length > 0;
-  };
-
-  this.records = function() {
-    return this.data.length - 1;
-  };
-
-  this.fields = function() {
-    return this.data[0].length;
-  };
-
-  this.headers = function() {
-    return this.data[0];
-  };
-
-  this.body = function() {
-    return _(this.data).tail();
-  };
-};
-
-function Matcher(csv, options) {
+function Matcher(data, options) {
   this.match = function() {
     var results = [];
-    var rawData = csv.body();
+    var rawData = data.body();
     var groupedByEnvironment = _(rawData).groupBy(function(record) {
       return record[options.environment];
     });
@@ -108,19 +88,19 @@ var resultsView = {
 }
 
 var configView = {
-  bind: function(csv) {
+  bind: function(data) {
 
     function bindEnvironments() {
       var environments = $("#environment");
       environments.html("");
-      _(csv.headers()).each(function(item, index) {
+      _(data.headers()).each(function(item, index) {
         $("<option>").val(index).text(item).appendTo(environments);
       });
     };
 
     function bindHeaders(field) {
       field.html("");
-      _(csv.headers()).each(function(item, index) {
+      _(data.headers()).each(function(item, index) {
         var label = $("<label>");
         label.append($('<input type="checkbox">').val(index));
         label.append(item);
@@ -143,15 +123,15 @@ var configView = {
       };
     };
 
-    $("#csv-config-records").html(csv.records());
-    $("#csv-config-fields").html(csv.fields());
+    $("#csv-config-records").html(data.recordCount());
+    $("#csv-config-fields").html(data.fieldCount());
     bindEnvironments();
     bindHeaders($("#codes"));
     bindHeaders($("#descriptions"));
 
     $("#match").unbind("click").click(function() {
       var options = config();
-      var matcher = new Matcher(csv, options);
+      var matcher = new Matcher(data, options);
       resultsView.bind(matcher.match());
     });
 
@@ -166,9 +146,9 @@ var dataView = {
     $(document).ready(function() {
 
       $("#csv-file-analyze").click(function() {
-        var csv = new CSV($("#csv-file").val());
-        if (csv.hasData()) {
-          configView.bind(csv);
+        var data = new Data($("#csv-file").val());
+        if (data.hasRecords()) {
+          configView.bind(data);
         }
       });
 
