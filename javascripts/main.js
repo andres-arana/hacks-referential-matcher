@@ -1,3 +1,22 @@
+requirejs.config({
+  paths: {
+    'underscore': 'externals/underscore',
+    'jquery': 'externals/jquery',
+    'jquery.csv': 'externals/jquery.csv'
+  },
+
+  shim: {
+    'underscore': {
+      exports: '_',
+    },
+    'jquery': {
+      exports: '$',
+    },
+    'jquery.csv': ['jquery'],
+  },
+});
+
+requirejs(['jquery', 'underscore', 'jquery.csv'], function($, _) {
 function CSV(text) {
   this.data = $.csv.toArrays(text);
 
@@ -159,3 +178,4 @@ var dataView = {
 
 dataView.bind();
 
+});
