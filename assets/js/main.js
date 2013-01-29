@@ -2,7 +2,9 @@ requirejs.config({
   paths: {
     'underscore': 'externals/underscore',
     'jquery': 'externals/jquery',
-    'jquery.csv': 'externals/jquery.csv'
+    'jquery.csv': 'externals/jquery.csv',
+    'coffee-script': 'externals/coffee-script',
+    'coffee': 'requirejs/cs'
   },
 
   shim: {
@@ -19,10 +21,10 @@ requirejs.config({
   },
 });
 
-requirejs(['jquery', 'underscore', 'app/data', 'app/table'], function($, _, Data, Table) {
+requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/datatable'], function($, _, RawData, DataTable) {
 
 function Matcher(data, schema) {
-  this.table = new Table(data, schema);
+  this.table = new DataTable(data, schema);
 
   this.match = function() {
     var table = this.table;
@@ -33,9 +35,9 @@ function Matcher(data, schema) {
         var records = table.whereEnvironmentIs(env).find(code.asCriteria());
 
         if (records.length <= 0) {
-          results.push("Code [" + code + "] is not defined for environment [" + env + "]");
+          results.push("Code [" + code.asString() + "] is not defined for environment [" + env + "]");
         } else if (records.length > 1) {
-          results.push("Code [" + code + "] is defined multiple times for environment [" + env + "]");
+          results.push("Code [" + code.asString() + "] is defined multiple times for environment [" + env + "]");
         } else {
           var record = records[0];
           var currentRecordDescription = _(schema.descriptions).map(function(index) {
@@ -44,7 +46,7 @@ function Matcher(data, schema) {
           if (description === undefined) {
             description = currentRecordDescription;
           } else if (description != currentRecordDescription) {
-              results.push("Code [" + code + "] has different descriptions in some environments");
+              results.push("Code [" + code.asString() + "] has different descriptions in some environments");
           }
         }
       });
@@ -129,7 +131,7 @@ var dataView = {
     $(document).ready(function() {
 
       $("#csv-file-analyze").click(function() {
-        var data = new Data($("#csv-file").val());
+        var data = new RawData($("#csv-file").val());
         if (data.hasRecords()) {
           configView.bind(data);
         }
