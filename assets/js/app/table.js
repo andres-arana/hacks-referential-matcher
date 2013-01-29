@@ -24,6 +24,8 @@ define(['underscore'], function(_) {
     },
 
     allCodes: function() {
+      var _self = this;
+
       return _(this.views.byCode).keys().map(function(code) {
         return {
           asString: function() {
@@ -32,7 +34,7 @@ define(['underscore'], function(_) {
 
           asCriteria: function() {
             var values = code.split("###");
-            return _.zip(schema.codes, values).map(function(entry) {
+            return _.zip(_self.schema.codes, values).map(function(entry) {
               return { field: entry[0], value: entry[1] };
             });
           },

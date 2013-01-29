@@ -30,7 +30,7 @@ function Matcher(data, schema) {
     _(table.allCodes()).each(function(code) {
       var description = undefined;
       _(table.allEnvironments()).each(function(env) {
-        var records = _self.table.whereEnvironmentIs(env).find(code.asCriteria());
+        var records = table.whereEnvironmentIs(env).find(code.asCriteria());
 
         if (records.length <= 0) {
           results.push("Code [" + code + "] is not defined for environment [" + env + "]");

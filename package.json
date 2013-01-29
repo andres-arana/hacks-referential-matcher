@@ -1,0 +1,24 @@
+{
+  "name": "referential-matcher",
+  "version": "0.0.1",
+  "description": "A small, simple client-side web application to ensure referential data matches accross multiple environments",
+  "author": "Andrés Arana <and2arana@gmail.com>",
+  "license": "MIT",
+
+  "scripts": {
+    "start": "node scripts/start/bootstrap.js",
+    "test": "mocha --compilers coffee:coffee-script --require should -R spec"
+  },
+
+  "devDependencies": {
+    "coffee-script": "1.4.x",
+    "express": "3.1.x",
+    "mocha": "1.8.x",
+    "should": "1.2.x",
+    "zombie": "1.4.x"
+  },
+
+  "engines": {
+    "node": ">= 0.8"
+  }
+}
