@@ -1,4 +1,4 @@
-define ['underscore'], (_) ->
+define ['underscore', 'coffee!app/record'], (_, Record) ->
   class Table
     constructor: (@data, @schema) ->
       @raw = data.contents()
@@ -23,6 +23,9 @@ define ['underscore'], (_) ->
     whereEnvironmentIs: (env) ->
       find: (criteria) =>
         records = @views.byEnvironment[env]
-        _(records).filter (record) ->
+        records = _(records).filter (record) ->
           _(criteria).all (c) ->
             record[c.field] == c.value
+
+        _(records).map (record) =>
+          new Record record, @schema

@@ -21,31 +21,29 @@ requirejs.config({
   },
 });
 
-requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/datatable'], function($, _, RawData, DataTable) {
+requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/categorizer'], function($, _, RawData, Categorizer) {
 
 function Matcher(data, schema) {
-  this.table = new DataTable(data, schema);
+  this.categorizer = new Categorizer(data, schema)
 
   this.match = function() {
-    var table = this.table;
+    var categories = this.categorizer.categorize();
     var results = [];
-    _(table.allCodes()).each(function(code) {
-      var description = undefined;
-      _(table.allEnvironments()).each(function(env) {
-        var records = table.whereEnvironmentIs(env).find(code.asCriteria());
-
+    _(categories).each(function(category) {
+      var code = category.code;
+      var descriptions = [];
+      _(category.environments).each(function(environment) {
+        var env = environment.code;
+        var records = environment.records;
         if (records.length <= 0) {
           results.push("Code [" + code.asString() + "] is not defined for environment [" + env + "]");
         } else if (records.length > 1) {
           results.push("Code [" + code.asString() + "] is defined multiple times for environment [" + env + "]");
         } else {
           var record = records[0];
-          var currentRecordDescription = _(schema.descriptions).map(function(index) {
-            return record[index];
-          }).join("###");
-          if (description === undefined) {
-            description = currentRecordDescription;
-          } else if (description != currentRecordDescription) {
+          if (descriptions.length < 1) {
+            descriptions.push(record.description());
+          } else if (descriptions[0] != record.description()) {
               results.push("Code [" + code.asString() + "] has different descriptions in some environments");
           }
         }
