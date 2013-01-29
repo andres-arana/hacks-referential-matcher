@@ -19,43 +19,26 @@ requirejs.config({
   },
 });
 
-requirejs(['jquery', 'underscore', 'app/data'], function($, _, Data) {
+requirejs(['jquery', 'underscore', 'app/data', 'app/table'], function($, _, Data, Table) {
 
-function Matcher(data, options) {
+function Matcher(data, schema) {
+  this.table = new Table(data, schema);
+
   this.match = function() {
+    var table = this.table;
     var results = [];
-    var rawData = data.body();
-    var groupedByEnvironment = _(rawData).groupBy(function(record) {
-      return record[options.environment];
-    });
-    var groupedByCode = _(rawData).groupBy(function(record) {
-      return _(options.codes).map(function(code) {
-        return record[code];
-      }).join("###");
-    });
-    var allEnvironments = _(groupedByEnvironment).keys();
-    var allCodes = _(groupedByCode).keys();
-
-    _(allCodes).each(function(code) {
-      var actualCode = code.split("###");
-      var fields = _.zip(options.codes, actualCode);
+    _(table.allCodes()).each(function(code) {
       var description = undefined;
-      _(allEnvironments).each(function(env) {
-        var records = groupedByEnvironment[env];
-        var matchingRecords = _(records).filter(function(record) {
-          var fieldMatches = _(fields).map(function(field) {
-            return record[field[0]] == field[1];
-          });
-          return _(fieldMatches).all(_.identity);
-        });
+      _(table.allEnvironments()).each(function(env) {
+        var records = _self.table.whereEnvironmentIs(env).find(code.asCriteria());
 
-        if (matchingRecords.length <= 0) {
+        if (records.length <= 0) {
           results.push("Code [" + code + "] is not defined for environment [" + env + "]");
-        } else if (matchingRecords.length > 1) {
+        } else if (records.length > 1) {
           results.push("Code [" + code + "] is defined multiple times for environment [" + env + "]");
         } else {
-          var record = matchingRecords[0];
-          var currentRecordDescription = _(options.descriptions).map(function(index) {
+          var record = records[0];
+          var currentRecordDescription = _(schema.descriptions).map(function(index) {
             return record[index];
           }).join("###");
           if (description === undefined) {

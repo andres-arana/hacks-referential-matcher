@@ -1,5 +1,3 @@
-// Module for processing the csv data to be matched
-
 define(['underscore', 'jquery.csv'], function(_, csv) {
   function Data(text) {
     this.raw = csv.toArrays(text);
