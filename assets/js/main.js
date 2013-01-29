@@ -21,38 +21,7 @@ requirejs.config({
   },
 });
 
-requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/categorizer'], function($, _, RawData, Categorizer) {
-
-function Matcher(data, schema) {
-  this.categorizer = new Categorizer(data, schema)
-
-  this.match = function() {
-    var categories = this.categorizer.categorize();
-    var results = [];
-    _(categories).each(function(category) {
-      var code = category.code;
-      var descriptions = [];
-      _(category.environments).each(function(environment) {
-        var env = environment.code;
-        var records = environment.records;
-        if (records.length <= 0) {
-          results.push("Code [" + code.asString() + "] is not defined for environment [" + env + "]");
-        } else if (records.length > 1) {
-          results.push("Code [" + code.asString() + "] is defined multiple times for environment [" + env + "]");
-        } else {
-          var record = records[0];
-          if (descriptions.length < 1) {
-            descriptions.push(record.description());
-          } else if (descriptions[0] != record.description()) {
-              results.push("Code [" + code.asString() + "] has different descriptions in some environments");
-          }
-        }
-      });
-    });
-
-    return _(results).uniq();
-  };
-};
+requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/missmatchfinder'], function($, _, RawData, MissmatchFinder) {
 
 var resultsView = {
   bind: function(matches) {
@@ -114,8 +83,8 @@ var configView = {
 
     $("#match").unbind("click").click(function() {
       var options = config();
-      var matcher = new Matcher(data, options);
-      resultsView.bind(matcher.match());
+      var matcher = new MissmatchFinder(data, options);
+      resultsView.bind(matcher.findMissmatches());
     });
 
     $("#csv-config-message").hide();
