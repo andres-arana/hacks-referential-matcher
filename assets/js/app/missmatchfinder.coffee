@@ -1,4 +1,4 @@
-define ["underscore", "coffee!app/categorizer"], (_, Categorizer) ->
+define ["underscore"], (_) ->
   messages =
     forUndefinedCode: (code, environment) ->
       "Code [#{code.asString()}] is not defined in [#{environment.code}]"
@@ -35,11 +35,9 @@ define ["underscore", "coffee!app/categorizer"], (_, Categorizer) ->
     _(result).flatten()
 
   class MissmatchFinder
-    constructor: (data, schema) ->
-      categorizer = new Categorizer data, schema
-      @categories = categorizer.categorize()
+    constructor: (@hierarchy) ->
 
-    findMissmatches: ->
-      codeMissmatches = findCodeMissmatches @categories
-      descriptionMissmatches = findDescriptionMissmatches @categories
+    find: ->
+      codeMissmatches = findCodeMissmatches @hierarchy.data
+      descriptionMissmatches = findDescriptionMissmatches @hierarchy.data
       _.union codeMissmatches, descriptionMissmatches

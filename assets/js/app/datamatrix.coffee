@@ -1,19 +1,19 @@
 define ["underscore", "jquery.csv"], (_, csv) ->
-  class RawData
+  class DataMatrix
     constructor: (text) ->
-      @raw = csv.toArrays text
+      @data = csv.toArrays text
 
     hasRecords: ->
-      @raw.length > 1
+      @data.length > 1
 
     recordCount: ->
-      @raw.length - 1
+      @data.length - 1
 
     fieldCount: ->
-      @raw[0].length
+      @data[0].length
 
     headers: ->
-      @raw[0]
+      @data[0]
 
     contents: ->
-      _(@raw).tail()
+      _(@data).tail()

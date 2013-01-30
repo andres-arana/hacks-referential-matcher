@@ -1,11 +1,11 @@
 define ['underscore', 'coffee!app/record'], (_, Record) ->
-  class Table
-    constructor: (@data, @schema) ->
-      @raw = data.contents()
+  class DataTable
+    constructor: (matrix, @schema) ->
+      @data = matrix.contents()
       @views = 
-        byEnvironment: _(@raw).groupBy (record) =>
+        byEnvironment: _(@data).groupBy (record) =>
           record[@schema.environment]
-        byCode: _(@raw).groupBy (record) =>
+        byCode: _(@data).groupBy (record) =>
           _(@schema.codes).map((code) => record[code]).join "###"
 
     allEnvironments: ->

@@ -21,13 +21,13 @@ requirejs.config({
   },
 });
 
-requirejs(['jquery', 'underscore', 'coffee!app/rawdata', 'coffee!app/missmatchfinder'], function($, _, RawData, MissmatchFinder) {
+requirejs(['jquery', 'underscore', 'coffee!app/datamatrix', 'coffee!app/datatable', 'coffee!app/datahierarchy', 'coffee!app/missmatchfinder'], function($, _, DataMatrix, DataTable, DataHierarchy, MissmatchFinder) {
 
 var resultsView = {
-  bind: function(matches) {
-    if (matches.length > 0) {
+  bind: function(missmatches) {
+    if (missmatches.length > 0) {
       $("#result-log").html("");
-      _(matches).each(function(match) {
+      _(missmatches).each(function(match) {
         $("#result-log").append("<li>" + match + "</li>");
       });
     } else {
@@ -40,19 +40,19 @@ var resultsView = {
 }
 
 var configView = {
-  bind: function(data) {
+  bind: function(matrix) {
 
     function bindEnvironments() {
       var environments = $("#environment");
       environments.html("");
-      _(data.headers()).each(function(item, index) {
+      _(matrix.headers()).each(function(item, index) {
         $("<option>").val(index).text(item).appendTo(environments);
       });
     };
 
     function bindHeaders(field) {
       field.html("");
-      _(data.headers()).each(function(item, index) {
+      _(matrix.headers()).each(function(item, index) {
         var label = $("<label>");
         label.append($('<input type="checkbox">').val(index));
         label.append(item);
@@ -75,16 +75,18 @@ var configView = {
       };
     };
 
-    $("#csv-config-records").html(data.recordCount());
-    $("#csv-config-fields").html(data.fieldCount());
+    $("#csv-config-records").html(matrix.recordCount());
+    $("#csv-config-fields").html(matrix.fieldCount());
     bindEnvironments();
     bindHeaders($("#codes"));
     bindHeaders($("#descriptions"));
 
     $("#match").unbind("click").click(function() {
       var options = config();
-      var matcher = new MissmatchFinder(data, options);
-      resultsView.bind(matcher.findMissmatches());
+      var table = new DataTable(matrix, options);
+      var hierarchy = new DataHierarchy(table);
+      var missmatchFinder = new MissmatchFinder(hierarchy);
+      resultsView.bind(missmatchFinder.find());
     });
 
     $("#csv-config-message").hide();
@@ -98,9 +100,9 @@ var dataView = {
     $(document).ready(function() {
 
       $("#csv-file-analyze").click(function() {
-        var data = new RawData($("#csv-file").val());
-        if (data.hasRecords()) {
-          configView.bind(data);
+        var matrix = new DataMatrix($("#csv-file").val());
+        if (matrix.hasRecords()) {
+          configView.bind(matrix);
         }
       });
 
